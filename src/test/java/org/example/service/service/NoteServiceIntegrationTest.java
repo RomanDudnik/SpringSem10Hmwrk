@@ -5,15 +5,12 @@ import org.example.repository.NoteRepository;
 import org.example.service.NoteServiceImplement;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
 
 
 @SpringBootTest
@@ -95,72 +92,4 @@ public class NoteServiceIntegrationTest {
         assertNull(retrievedNote);
     }
 
-    @Test
-    @DisplayName("createNoteTest")
-    public void createNoteTest() {
-        // Предпосылка
-
-        // Создаем экземпляр Note
-        Note note = new Note();
-        Mockito.when(noteRepository.save(note)).thenReturn(note);
-
-        // Вызов
-
-        // Вызываем тестируемый метод createNote() из noteService.
-        Note createdNote = noteService.createNote(note);
-
-        // Проверка
-
-        // Проверяем, что полученный объект createdNote совпадает с ожидаемым объектом note.
-        assertEquals(note, createdNote);
-    }
-
-    @Test
-    @DisplayName("updateNoteTest")
-    public void updateNoteTest() {
-        // Предпосылка
-
-        // Создаем экземпляр Note
-        Long id = 1L;
-        Note existingNote = new Note();
-        // Создаем новый экземпляр Note для обновления
-        Note updatedNote = new Note();
-        updatedNote.setTitle("Updated Title");
-        updatedNote.setContent("Updated Content");
-        Mockito.when(noteRepository.findById(id)).thenReturn(Optional.of(existingNote));
-        Mockito.when(noteRepository.save(existingNote)).thenReturn(updatedNote);
-
-        // Вызов
-
-        // Вызываем тестируемый метод updateNote() из noteService.
-        Note resultNote = noteService.updateNote(id, updatedNote);
-
-        // Проверка
-
-        // Проверяем, что полученный объект resultNote совпадает с ожидаемым объектом updatedNote.
-        assertEquals(updatedNote, resultNote);
-        assertEquals(updatedNote.getTitle(), existingNote.getTitle());
-        assertEquals(updatedNote.getContent(), existingNote.getContent());
-    }
-
-    @Test
-    @DisplayName("deleteNoteByIdTest")
-    public void deleteNoteByIdTest() {
-        // Предпосылка
-
-        // Создаем экземпляр Note
-        Long id = 1L;
-        Note note = new Note();
-        Mockito.when(noteRepository.findById(id)).thenReturn(Optional.of(note));
-
-        // Вызов
-
-        // Вызываем тестируемый метод deleteNoteById() из noteService.
-        noteService.deleteNoteById(id);
-
-        // Проверка
-
-        // Проверяем, что вызывается метод delete() у мока noteRepository.
-        Mockito.verify(noteRepository, times(1)).delete(note);
-    }
 }

@@ -1,7 +1,3 @@
-server:
-  port: 8080
 spring:
-  application:
-    name: notes-service
   jpa:
     open-in-view: true
