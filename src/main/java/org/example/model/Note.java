@@ -32,4 +32,5 @@ public class Note {
 
     @UpdateTimestamp
     private LocalDateTime creationDate;
+
 }

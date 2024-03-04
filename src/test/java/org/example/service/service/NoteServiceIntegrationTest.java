@@ -5,12 +5,14 @@ import org.example.repository.NoteRepository;
 import org.example.service.NoteServiceImplement;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 
 
 @SpringBootTest
@@ -46,7 +48,7 @@ public class NoteServiceIntegrationTest {
         // Проверка
 
         // Проверяем, что полученный список notes содержит ожидаемые экземпляры Note.
-        assertEquals(2, notes.size());
+        assertEquals(4, notes.size());
         assertTrue(notes.contains(note1));
         assertTrue(notes.contains(note2));
     }
@@ -92,4 +94,59 @@ public class NoteServiceIntegrationTest {
         assertNull(retrievedNote);
     }
 
+    @Test
+    @DisplayName("createNoteTest")
+    public void createNoteTest() {
+        // Arrange
+        Note note = new Note();
+        note.setTitle("Note");
+        note.setContent("Content");
+
+        // Act
+        noteService.createNote(note);
+
+        // Assert
+        List<Note> savedNotes = noteRepository.findAll();
+        assertTrue(savedNotes.contains(note));
+    }
+
+    @Test
+    @DisplayName("updateNoteTest")
+    public void updateNoteTest() {
+        // Arrange
+        Note existingNote = new Note();
+        existingNote.setTitle("Title");
+        existingNote.setContent("Content");
+        noteRepository.save(existingNote);
+
+        Note updatedNote = new Note();
+        updatedNote.setTitle("Updated Title");
+        updatedNote.setContent("Updated Content");
+
+        // Act
+        noteService.updateNote(existingNote.getId(), updatedNote);
+
+        // Assert
+        Note retrievedNote = noteRepository.findById(existingNote.getId()).orElse(null);
+        assertNotNull(retrievedNote);
+        assertEquals(updatedNote.getTitle(), retrievedNote.getTitle());
+        assertEquals(updatedNote.getContent(), retrievedNote.getContent());
+    }
+
+    @Test
+    @DisplayName("deleteNoteByIdTest")
+    public void deleteNoteByIdTest() {
+        // Arrange
+        Note note = new Note();
+        note.setTitle("Note");
+        note.setContent("Content");
+        noteRepository.save(note);
+
+        // Act
+        noteService.deleteNoteById(note.getId());
+
+        // Assert
+        Note deletedNote = noteRepository.findById(note.getId()).orElse(null);
+        assertNull(deletedNote);
+    }
 }
