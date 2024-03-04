@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+import static org.mockito.Mockito.verify;
 
 
 @SpringBootTest
@@ -48,9 +48,11 @@ public class NoteServiceIntegrationTest {
         // Проверка
 
         // Проверяем, что полученный список notes содержит ожидаемые экземпляры Note.
-        assertEquals(4, notes.size());
-        assertTrue(notes.contains(note1));
-        assertTrue(notes.contains(note2));
+        assertEquals(noteRepository.count(), notes.size());
+        assertTrue(noteRepository.findAll().contains(note1));
+        assertTrue(noteRepository.findAll().contains(note2));
+        // verify
+        verify(noteRepository).findAll();
     }
 
     @Test
@@ -73,6 +75,8 @@ public class NoteServiceIntegrationTest {
 
         // Проверяем, что полученный объект retrievedNote совпадает с ожидаемым объектом note.
         assertEquals(note, retrievedNote);
+        // verify
+        verify(noteRepository).findById(note.getId());
     }
 
     @Test
@@ -92,28 +96,32 @@ public class NoteServiceIntegrationTest {
 
         // Проверяем, что полученный объект retrievedNote равен null.
         assertNull(retrievedNote);
+        // verify
+        verify(noteRepository).findById(nonExistingId);
     }
 
     @Test
     @DisplayName("createNoteTest")
     public void createNoteTest() {
-        // Arrange
+        // Предпосылка
         Note note = new Note();
         note.setTitle("Note");
         note.setContent("Content");
 
-        // Act
+        // Вызов
         noteService.createNote(note);
 
-        // Assert
+        // Проверка
         List<Note> savedNotes = noteRepository.findAll();
         assertTrue(savedNotes.contains(note));
+        // verify
+        verify(noteRepository).save(note);
     }
 
     @Test
     @DisplayName("updateNoteTest")
     public void updateNoteTest() {
-        // Arrange
+        // Предпосылка
         Note existingNote = new Note();
         existingNote.setTitle("Title");
         existingNote.setContent("Content");
@@ -123,30 +131,37 @@ public class NoteServiceIntegrationTest {
         updatedNote.setTitle("Updated Title");
         updatedNote.setContent("Updated Content");
 
-        // Act
+        // Вызов
         noteService.updateNote(existingNote.getId(), updatedNote);
 
-        // Assert
+        // Проверка
         Note retrievedNote = noteRepository.findById(existingNote.getId()).orElse(null);
         assertNotNull(retrievedNote);
         assertEquals(updatedNote.getTitle(), retrievedNote.getTitle());
         assertEquals(updatedNote.getContent(), retrievedNote.getContent());
+        // verify
+        verify(noteRepository).findById(existingNote.getId());
+        verify(noteRepository).save(existingNote);
     }
 
     @Test
     @DisplayName("deleteNoteByIdTest")
     public void deleteNoteByIdTest() {
-        // Arrange
+        // Предпосылка
         Note note = new Note();
+        note.setId(1L);
         note.setTitle("Note");
         note.setContent("Content");
         noteRepository.save(note);
 
-        // Act
+        // Вызов
         noteService.deleteNoteById(note.getId());
 
-        // Assert
+        // Проверка
         Note deletedNote = noteRepository.findById(note.getId()).orElse(null);
         assertNull(deletedNote);
+        // verify
+        verify(noteRepository).findById(note.getId());
+        verify(noteRepository).delete(note);
     }
 }

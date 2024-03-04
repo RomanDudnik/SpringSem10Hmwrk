@@ -73,6 +73,10 @@ class NoteServiceImplementTest {
 
         // Проверяем, что полученный объект actualNote совпадает с ожидаемым объектом expectedNote.
         assertEquals(expectedNote, actualNote);
+
+        // Проверяем, что вызывается метод findById() у мока noteRepository.
+        verify(noteRepository, times(1)).findById(id);
+
     }
 
     @Test
@@ -93,6 +97,10 @@ class NoteServiceImplementTest {
 
         // Проверяем, что полученный объект actualNote равен null.
         assertNull(actualNote);
+        // verify проверяет вызов метода findById у мока noteRepository
+        verify(noteRepository, times(1)).findById(id);
+
+
     }
 
     @Test
@@ -113,6 +121,8 @@ class NoteServiceImplementTest {
 
         // Проверяем, что полученный объект createdNote совпадает с ожидаемым объектом note.
         assertEquals(note, createdNote);
+        // verify проверяет вызов метода save у мока noteRepository
+        verify(noteRepository, times(1)).save(note);
     }
 
     @Test
@@ -145,6 +155,9 @@ class NoteServiceImplementTest {
         assertEquals(updatedNote.getTitle(), existingNote.getTitle());
         // Проверяем, что полученный объект resultNote совпадает с ожидаемым объектом existingNote.
         assertEquals(updatedNote.getContent(), existingNote.getContent());
+        // verify
+        verify(noteRepository, times(1)).findById(id);
+        verify(noteRepository, times(1)).save(existingNote);
     }
 
     @Test
@@ -163,7 +176,6 @@ class NoteServiceImplementTest {
         noteService.deleteNoteById(id);
 
         // Проверка
-
         // Проверяем, что вызывается метод delete() у мока noteRepository.
         verify(noteRepository, times(1)).delete(note);
     }
